@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Restoran Yönetimi</h1>
+            <a href="{{ url_for('add_restaurant') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Yeni Restoran Ekle
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ restaurant.image or url_for('static', filename='default_restaurant.jpg') }}" 
+                         class="card-img-top" alt="{{ restaurant.name }}"
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ restaurant.name }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt"></i> {{ restaurant.address }}<br>
+                            <i class="fas fa-phone"></i> {{ restaurant.phone }}
+                        </p>
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('admin_edit_restaurant', restaurant_id=restaurant.id) }}" 
+                               class="btn btn-primary">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </a>
+                            <a href="{{ url_for('admin_add_menu_item', restaurant_id=restaurant.id) }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-utensils"></i> Menü Ekle
+                            </a>
+                            <button type="button" class="btn btn-danger" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteRestaurantModal{{ restaurant.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete Restaurant Modal -->
+                <div class="modal fade" id="deleteRestaurantModal{{ restaurant.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Restoranı Sil</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>{{ restaurant.name }} restoranını silmek istediğinizden emin misiniz?</p>
+                                <p class="text-danger">Bu işlem geri alınamaz ve tüm menü öğeleri de silinecektir!</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                <form action="{{ url_for('admin_delete_restaurant', restaurant_id=restaurant.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger">Sil</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Henüz restoran eklenmemiş.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

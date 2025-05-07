@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title mb-4">Profili Düzenle</h3>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               value="{{ user.username }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ user.email }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telefon</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               value="{{ user.phone }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Adres</label>
+                        <textarea class="form-control" id="address" name="address" 
+                                  rows="3">{{ user.address }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="profile_image" class="form-label">Profil Fotoğrafı</label>
+                        <input type="file" class="form-control" id="profile_image" name="profile_image" 
+                               accept="image/*">
+                        <small class="text-muted">Maksimum dosya boyutu: 5MB</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Mevcut Şifre</label>
+                        <input type="password" class="form-control" id="current_password" 
+                               name="current_password">
+                        <small class="text-muted">Şifrenizi değiştirmek istiyorsanız doldurun</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">Yeni Şifre</label>
+                        <input type="password" class="form-control" id="new_password" 
+                               name="new_password">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Yeni Şifre (Tekrar)</label>
+                        <input type="password" class="form-control" id="confirm_password" 
+                               name="confirm_password">
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                        </button>
+                        <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> İptal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
