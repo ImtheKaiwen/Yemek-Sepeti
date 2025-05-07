@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body p-5 text-center">
+                    <h1 class="display-4 mb-4">Lezzetli Yemekler, Hızlı Teslimat</h1>
+                    <p class="lead mb-4">En sevdiğiniz restoranlardan sipariş verin, yemekleriniz kapınızda!</p>
+                    <form action="{{ url_for('search') }}" method="GET" class="row g-3 justify-content-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control form-control-lg" 
+                                       placeholder="Restoran veya yemek ara..." 
+                                       value="{{ request.args.get('q', '') }}">
+                                <button type="submit" class="btn btn-light">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtreler -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ url_for('search') }}" method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <select name="category" class="form-select">
+                                <option value="">Tüm Kategoriler</option>
+                                <option value="Türk Mutfağı" {% if request.args.get('category') == 'Türk Mutfağı' %}selected{% endif %}>Türk Mutfağı</option>
+                                <option value="İtalyan" {% if request.args.get('category') == 'İtalyan' %}selected{% endif %}>İtalyan</option>
+                                <option value="Uzak Doğu" {% if request.args.get('category') == 'Uzak Doğu' %}selected{% endif %}>Uzak Doğu</option>
+                                <option value="Fast Food" {% if request.args.get('category') == 'Fast Food' %}selected{% endif %}>Fast Food</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select name="rating" class="form-select">
+                                <option value="">Tüm Puanlar</option>
+                                <option value="4" {% if request.args.get('rating') == '4' %}selected{% endif %}>4+ Yıldız</option>
+                                <option value="3" {% if request.args.get('rating') == '3' %}selected{% endif %}>3+ Yıldız</option>
+                                <option value="2" {% if request.args.get('rating') == '2' %}selected{% endif %}>2+ Yıldız</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter"></i> Filtrele
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restoranlar -->
+    <div class="row">
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ restaurant.image or url_for('static', filename='default_restaurant.jpg') }}" 
+                         class="card-img-top" alt="{{ restaurant.name }}"
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ restaurant.name }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt"></i> {{ restaurant.address }}<br>
+                            <i class="fas fa-phone"></i> {{ restaurant.phone }}
+                            {% if restaurant.category %}
+                            <br><span class="badge bg-secondary">{{ restaurant.category }}</span>
+                            {% endif %}
+                        </p>
+                        {% if restaurant.rating %}
+                        <div class="text-warning mb-3">
+                            {% for i in range(restaurant.rating|int) %}
+                            <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for i in range(5 - restaurant.rating|int) %}
+                            <i class="far fa-star"></i>
+                            {% endfor %}
+                            <span class="text-muted ms-1">({{ restaurant.rating }})</span>
+                        </div>
+                        {% endif %}
+                        <a href="{{ url_for('restaurant_detail', restaurant_id=restaurant.id) }}" 
+                           class="btn btn-primary w-100">
+                            <i class="fas fa-utensils"></i> Menüyü Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> {% if request.args.get('q') %}Arama kriterlerinize uygun restoran bulunamadı.{% else %}Henüz restoran eklenmemiş.{% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

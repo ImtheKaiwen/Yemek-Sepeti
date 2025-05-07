@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <img src="{{ menu_item.image or url_for('static', filename='default_food.jpg') }}" 
+                 class="img-fluid rounded" alt="{{ menu_item.name }}">
+        </div>
+        <div class="col-md-8">
+            <h1>{{ menu_item.name }}</h1>
+            <p class="text-muted">
+                <i class="fas fa-utensils"></i> {{ menu_item.restaurant.name }}<br>
+                {% if menu_item.category %}
+                <span class="badge bg-secondary">{{ menu_item.category }}</span>
+                {% endif %}
+            </p>
+            <p class="lead">{{ menu_item.description }}</p>
+            <h3 class="text-primary">{{ menu_item.price }} TL</h3>
+            
+            {% if menu_item.rating %}
+            <div class="text-warning mb-3">
+                {% for i in range(menu_item.rating|int) %}
+                <i class="fas fa-star"></i>
+                {% endfor %}
+                {% for i in range(5 - menu_item.rating|int) %}
+                <i class="far fa-star"></i>
+                {% endfor %}
+                <span class="text-muted ms-1">({{ "%.1f"|format(menu_item.rating) }})</span>
+            </div>
+            {% endif %}
+            
+            <form action="{{ url_for('add_to_cart_route', item_id=menu_item.id) }}" method="POST" class="mb-4">
+                <div class="input-group" style="width: 200px;">
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="10">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-cart-plus"></i> Sepete Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Değerlendirme Formu -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Değerlendirme Yap</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('add_review', item_id=menu_item.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Puanınız</label>
+                            <div class="rating">
+                                {% for i in range(5, 0, -1) %}
+                                <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" required>
+                                <label for="star{{ i }}"><i class="fas fa-star"></i></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Yorumunuz</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Değerlendir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Değerlendirmeler -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h3 class="mb-4">Değerlendirmeler</h3>
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">{{ review.user.username }}</h5>
+                            <small class="text-muted">{{ review.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                        <div class="text-warning mb-2">
+                            {% for i in range(review.rating) %}
+                            <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for i in range(5 - review.rating) %}
+                            <i class="far fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="card-text">{{ review.comment }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Henüz değerlendirme yapılmamış.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #ddd;
+    padding: 0 0.1em;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffd700;
+}
+{% endblock %} 
